@@ -11,3 +11,4 @@ api.get('/removeLeague/:id', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin], league
 api.post('/search', mdAuth.ensureAuth, leagueController.searchLeague);
 
 module.exports = api;
+
