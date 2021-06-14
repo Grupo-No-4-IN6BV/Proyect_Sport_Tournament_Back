@@ -3,7 +3,7 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 
-var Schema = Schema ({
+var leagueSchema = Schema ({
     name: String,
     description: String,
     count: Number,
