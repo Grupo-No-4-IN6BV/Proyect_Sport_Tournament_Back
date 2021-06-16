@@ -14,7 +14,6 @@ function setTeam(req, res){
         }else if(leagueFind){
             team.name = params.name;
             team.image = params.image;
-
             team.save((err, teamSaved)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general 2'});
@@ -48,7 +47,15 @@ function updateTeam(req, res){
             if(err){
                 return res.status(500).send({message: 'Error general 2'});
             }else if(leagueFind){
-                return res.status(404).send({message: 'No existe esta liga'});
+                Team.findByIdAndUpdate(teamId, params, {new: true}, (err, updateTeam)=>{
+                    if(err){
+                        return res.status(500).send({message: 'Error general 3'});
+                    }else if(updateTeam){
+                        return res.send({message: 'Equipo actualizao', updateTeam});
+                    }else{
+                        return res.status(404).send({message: 'No se pudo actualizar el equipo'});
+                    }
+                })
             }else{
                 return res.status(404).send({message: 'No existe esta liga'});
             }
@@ -58,6 +65,44 @@ function updateTeam(req, res){
     }
 }
 
+function removeTeam(req,res){
+    let leagueId = req.params.idL;
+    let teamId = req.params.idT;
+
+    League.findByIdAndUpdate({_id: leagueId, teams: teamId}, {$pull: {teams: teamId}}, {new:true}, (err, teamPull)=>{
+        if(err){
+            return res.status(500).send({message: 'Error general 1'})
+        }else if(teamPull){
+            Team.findByIdAndRemove(teamId, (err, teamRemove)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general 2', err})
+                }else if(teamRemove){
+                    return res.send({message: 'Se elimino el equipo: ', teamRemove});
+                }else{
+                    return res.status(404).send({message: 'No se pudo eliminar'})
+                }
+            })
+        }else{
+            return res.status(404).send({message: 'No se pusheo, no exist team'})
+        }
+    }).populate('teams')
+}
+
+function getTeams(req, res){
+    Team.find({}).populate('leagues').exec((err, teams)=>{
+        if(err){
+            return res.status(500).send({message: 'Error general 1', err})
+        }else if(teams){
+            return res.send({message: 'Equipos encontrados', teams})
+        }else{
+            return res.status(404).send({message: 'No hay registros'})
+        }
+    })
+}
+
 module.exports = {
-    setTeam
+    setTeam,
+    updateTeam,
+    removeTeam,
+    getTeams
 }
