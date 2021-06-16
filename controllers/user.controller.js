@@ -71,7 +71,7 @@ function login(req, res){
             }else{
                 return res.send({message: "Usuario no existente"})
             }
-        })
+        }).populate('leagues')
     }else{
         return res.status(404).send({message: "Ingrese Username y contraseña"})
     }
@@ -97,6 +97,7 @@ function register(req, res){
                         user.username = params.username;
                         user.email = params.email;
                         user.role = 'ROLE_USER';
+                        user.image = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/cf2836cb-5893-4a6c-b156-5a89d94fc721/dcb12oy-f393b61a-0754-475a-8f2e-db06550f392a.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2NmMjgzNmNiLTU4OTMtNGE2Yy1iMTU2LTVhODlkOTRmYzcyMVwvZGNiMTJveS1mMzkzYjYxYS0wNzU0LTQ3NWEtOGYyZS1kYjA2NTUwZjM5MmEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.yuSQQYbikFatv15ewUZmNDDxm7s3hBBYGJkUFUUF6rw'
                         user.save((err, userSaved) => {
                             if(err){
                                 return res.status(404).send({message: "ocurrio un error al intentar guardar el usuario"})
@@ -118,11 +119,11 @@ function register(req, res){
 }
 
 function getUsers(req, res){
-    User.find({}).exec((err, userFinds) => {
+    User.find({}).populate('leagues').exec((err, users) => {
         if(err){
             return res.status(500).send({message: "Error al buscar los usuarios"})
-        }else if(userFinds){
-            return res.send({message: "Usuarios encontrados", userFinds})
+        }else if(users){
+            return res.send({message: "Usuarios encontrados", users})
         }else{
             return res.status(204).send({message: "No se encontraron usuarios"})
         }
@@ -153,7 +154,7 @@ function updateUser(req, res){
                                 }else{
                                     return res.send({message: 'No se pudo actualizar al usuario'});
                                 }
-                            })
+                            }).populate('leagues')
                         }else{
                             return res.send({message: 'Nombre de usuario ya en uso'});
                         }
@@ -187,12 +188,13 @@ function updateUser(req, res){
 
 function saveUser(req, res){
 }
+
 function removeUser(req, res){
     let userId = req.params.id;
     let params = req.body;
 
     if(userId != req.user.sub){
-        return res.status(403).send({message: 'No posees permisos necesarios para realizar esta acción'})
+        return res.send({message: 'No posees permisos necesarios para realizar esta acción'})
     }else{
         if(!params.password){
             return res.status(401).send({message: 'Por favor ingresa la contraseña para poder eliminar tu cuenta'});
@@ -203,7 +205,7 @@ function removeUser(req, res){
                 }else if(userFind){
                     bcrypt.compare(params.password, userFind.password, (err, checkPassword)=>{
                         if(err){
-                            return res.status(500).send({message: 'Error general al verificar contraseña'})
+                            return res.send({message: 'Error general al verificar contraseña'})
                         }else if(checkPassword){
                             User.findByIdAndRemove(userId, (err, userFind)=>{
                                 if(err){
@@ -211,7 +213,7 @@ function removeUser(req, res){
                                 }else if(userFind){
                                     return res.send({message: 'Usuario eliminado', userRemoved:userFind})
                                 }else{
-                                    return res.status(404).send({message: 'Usuario no encontrado o ya eliminado'})
+                                    return res.send({message: 'Usuario no encontrado o ya eliminado'})
                                 }
                             })
                         }else{
@@ -219,7 +221,7 @@ function removeUser(req, res){
                         }
                     })
                 }else{
-                    return res.status(404).send({message: 'Usuario inexistente o ya eliminado'})
+                    return res.send({message: 'Usuario inexistente o ya eliminado'})
                 }
             })
         }
@@ -233,5 +235,4 @@ module.exports = {
     getUsers,
     updateUser,
     removeUser
-
 }

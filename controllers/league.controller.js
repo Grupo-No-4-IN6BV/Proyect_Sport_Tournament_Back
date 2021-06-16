@@ -58,63 +58,8 @@ function saveLeague(req, res){
     }
 }
 
-function updateLeague(req, res){
-    let leagueId = req.params.id;
-    let update = req.body;
-
-    if(update.name){
-        League.findOne({name: update.name}, (err, leagueFind)=>{
-            if(err){
-                return res.status(500).send({message: 'Error general'});
-            }else if(leagueFind){
-                return res.send({message: 'Esta liga ya existe'});
-            }else{
-                League.findByIdAndUpdate(leagueId, update, {new:true}, (err, leagueUpdate)=>{
-                    if(err){
-                        return res.status(500).send({message: 'Error general al actualizar'})
-                    }else if(leagueUpdate){
-                        return res.send({message: 'Liga actualizada', leagueUpdate})
-                    }else{
-                        return res.status(401).send({message: 'No se actualizó la liga'})  
-                    }
-                })
-            }
-        })
-    }else {
-        return res.status(404).send({message: 'Llena un campo para poder actualizar'})
-    }   
-}
 
 
-function removeLeague(req, res){
-    let leagueId = req.params.id;
-
-    League.findOne({name : 'default'}, (err, leagueDefault)=>{
-        if(err){
-            return res.status(500).send({message: 'Error en el servidor'});
-        }else if(leagueDefault){
-            User.updateMany({leagues: leagueId},{$set: {leagues: leagueDefault.id}}, (err, usersFind)=>{
-                if(err){
-                    return res.status(500).send({message: 'Error en el servidor'});
-                }else if(usersFind){
-                    League.findByIdAndDelete(leagueId, (err, leagueDeleted)=>{
-                        if(err){
-                            return res.status(500).send({message: 'Error en el servidor'});
-                        }else if(leagueDeleted){
-                            return res.send({message: 'Liga eliminada satisfactoriamente', leagueDeleted})
-                        }else{
-                            return res.status(404).send({message: 'No existe la liga'});
-                        }
-                    })
-                }else{
-                    return res.status(404).send({message: 'No se encuentran equipos con dicha liga'});
-                }
-            }).populate('league')
-        }else{
-            return res.status(404).send({message: 'No hay registro de la liga por default'});
-        }
-    })
-}
 
 function searchLeague(req, res){
     var params = req.body;
@@ -134,10 +79,119 @@ function searchLeague(req, res){
     }
 }
 
+function setLeague(req, res){
+    var userId = req.params.id;
+    var params = req.body;
+    var league = new League();
+
+    if(userId != req.user.sub){
+        return res.status(500).send({message: 'No tienes permiso para realizar esta acción'});
+    }else{
+        User.findById(userId, (err, userFind)=>{
+            if(err){
+                return res.status(500).send({message: 'Error general en la busqueda'});
+            }else if(userFind){
+                league.name = params.name;
+                league.image = params.image;
+                league.count = '0';
+                league.save((err, leagueSaved)=>{
+                    if(err){
+                        return res.status(500).send({message: 'Error general al guardar'});
+                    }else if(leagueSaved){
+                        User.findByIdAndUpdate(userId, {$push:{leagues: leagueSaved._id}}, {new: true}, (err, pushLeague)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general al setear contacto'});
+                            }else if(pushLeague){
+                                console.log(pushLeague)
+                                return res.send({message: 'Contacto creado y agregado', pushLeague});
+                            }else{
+                                return res.status(404).send({message: 'No se seteo el contacto, pero sí se creó en la BD'});
+                            }
+                        }).populate('leagues')
+                    }else{
+                        return res.status(404).send({message: 'No se pudo guardar el contacto'});
+                    }
+                })
+
+            }else{
+                return res.status(404).send({message: 'Usuario no existente para crear contactos'});
+            }
+        })
+    }
+}
+
+function removeLeague(req, res){
+    let userId = req.params.idU;
+    let leagueId = req.params.idL;
+    if(userId != req.user.sub){
+        return res.status(500).send({message: 'No tienes permiso para realizar esta acción'})
+    }else{
+        User.findOneAndUpdate({_id: userId, leagues: leagueId},
+            {$pull: {leagues: leagueId}}, {new:true}, (err, leaguePull)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general'})
+                }else if(leaguePull){
+                    League.findByIdAndRemove(leagueId, (err, leagueRemoved)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general al eliminar el contacto, pero sí eliminado del registro de usuario', err})
+                        }else if(leagueRemoved){
+                            return res.send({message: 'Contacto eliminado permanentemente', leaguePull});
+                        }else{
+                            return res.status(404).send({message: 'Registro no encontrado o contacto ya eliminado'})
+                        }
+                    })
+                }else{
+                    return res.status(404).send({message: 'No existe el usuario que contiene el contacto a eliminar'})
+                }
+            }).populate('leagues')
+    }
+}
+
+function updateLeague(req, res){
+    let userId = req.params.idU;
+    let leagueId = req.params.idL;
+    let update = req.body;
+
+    if(userId != req.user.sub){
+        return res.status(404).send({message: 'No tienes permiso para realizar esta acción'});
+    }else{
+        if(update.name){
+            User.findOne({_id: userId, leagues: leagueId}, (err, userLeague)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general'});
+                }else if(userLeague){
+                    League.findByIdAndUpdate(leagueId, update, {new: true}, (err, updateLeague)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general al actualizar'});
+                        }else if(updateLeague){
+                            User.findOne({_id: userId, leagues: leagueId}, (err, userLeagueAct)=>{
+                                if(err){
+
+                                }else if(userLeagueAct){
+                                    return res.send({message: 'Contacto actualizado', userLeagueAct});
+                                }
+                            }).populate('leagues')
+                            
+                        }else{
+                            return res.status(401).send({message: 'No se pudo actualizar el contacto'});
+                        }
+                    })
+                }else{
+                    return res.status(404).send({message: 'Usuario o contacto inexistente'});
+                }
+            }).populate('leagues')
+        }else{
+            return res.status(404).send({message: 'Por favor ingresa los datos mínimos'});
+        }       
+    }
+}
+
+
 module.exports = {
     createDefault,
     saveLeague,
     updateLeague,
     removeLeague,
-    searchLeague
+    searchLeague,
+    setLeague
 }

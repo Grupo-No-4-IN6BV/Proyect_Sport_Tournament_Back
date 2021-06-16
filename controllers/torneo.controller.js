@@ -7,14 +7,12 @@ var User = require('../models/user.model');
 function createTorneo(req, res){
    let torneo = new Torneo();
    let params = req.body;
-
     if(params.name && params.rules && params.players){
             torneo.name = params.name;
             torneo.description = params.description;
             torneo.rules = params.rules;
             torneo.prize = params.prize;
             torneo.players = params.player;
-
             torneo.save((err, torneoSaved)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general al guardar el torneo'});
