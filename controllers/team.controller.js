@@ -42,16 +42,15 @@ function updateTeam(req, res){
     let leagueId = req.params.idL;
     let teamId = req.params.idT;   
     let params = req.body;
-    le
 
     if(params.name || params.image){
         League.findOne({_id: leagueId, teams: teamId}, (err, leagueFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error general 2'});
             }else if(leagueFind){
-                Team.
+                return res.status(404).send({message: 'No existe esta liga'});
             }else{
-                return res.status(404).send({message: 'No se encontro la liga'});
+                return res.status(404).send({message: 'No existe esta liga'});
             }
         })
     }else{
