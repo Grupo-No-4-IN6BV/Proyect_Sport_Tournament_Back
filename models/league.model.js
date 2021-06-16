@@ -7,7 +7,7 @@ var leagueSchema = Schema ({
     name: String,
     count: Number,
     image: String,
-    team: [{type: Schema.ObjectId, ref: "team"}]
+    teams: [{type: Schema.ObjectId, ref: "teams"}]
 })
 
 module.exports = mongoose.model('league', leagueSchema);
