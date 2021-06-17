@@ -1,10 +1,13 @@
 'use strict'
+//prueba
 
+//....
 var mongoose = require('mongoose');
 var app = require('./app');
 var user = require('./controllers/user.controller')
 var port = 3800;
 var leagueInit = require('./controllers/league.controller');
+
 
 mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);

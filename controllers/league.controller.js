@@ -2,6 +2,7 @@
 
 var User = require('../models/user.model');
 var League = require('../models/league.model');
+var Team = require('../models/team.model');
 
 function createDefault(req, res){
     let league = new League();
@@ -59,8 +60,6 @@ function saveLeague(req, res){
 }
 
 
-
-
 function searchLeague(req, res){
     var params = req.body;
 
@@ -83,6 +82,7 @@ function setLeague(req, res){
     var userId = req.params.id;
     var params = req.body;
     var league = new League();
+    var team = new Team();
 
     if(userId != req.user.sub){
         return res.status(500).send({message: 'No tienes permiso para realizar esta acción'});
@@ -102,8 +102,50 @@ function setLeague(req, res){
                             if(err){
                                 return res.status(500).send({message: 'Error general al setear contacto'});
                             }else if(pushLeague){
-                                console.log(pushLeague)
-                                return res.send({message: 'Contacto creado y agregado', pushLeague});
+                                League.findById(leagueSaved._id, (err, leagueFind)=>{
+                                    if(err){
+                                        return res.status(500).send({message: 'Error general 1'});
+                                    }else if(leagueFind){
+                                        team.name = 'default';
+                                        team.image = '';
+                                        team.count = 0;
+                                        team.save((err, teamSaved)=>{
+                                            if(err){
+                                                return res.status(500).send({message: 'Error general 2'});
+                                            }else if(teamSaved){
+                                                console.log(leagueFind)
+                                                League.findByIdAndUpdate(leagueSaved._id, {$push:{teams: teamSaved._id}}, {new: true}, (err, pushTeam)=>{
+                                                    if(err){
+                                                        return res.status(500).send({message: 'Error general al hacer push'});
+                                                    }else if(pushTeam){
+                                                        User.findById(userId, (err, userFind2)=>{
+                                                            if(err){
+                                                                console.log('error')
+                                                            }else if(userFind2){
+                                                                return res.send({message: 'Se pusheo correctamente el equipo', pushTeam, userFind2, pushLeague});
+                                                            }
+                                                        }).populate([
+                                                            {
+                                                              path: "leagues",
+                                                              model: "league",
+                                                              populate:{
+                                                                path: 'teams',
+                                                                model: 'team'
+                                                              }
+                                                            },
+                                                          ])
+                                                    }else{
+                                                        return res.status(404).send({message: 'No se encontro'});
+                                                    }
+                                                })
+                                            }else{
+                                                return res.status(404).send({message: 'No se pudo guardar'});
+                                            }
+                                        })
+                                    }else {
+                                        return res.status(404).send({message: 'No existe esta liga'});
+                                    }
+                                })
                             }else{
                                 return res.status(404).send({message: 'No se seteo el contacto, pero sí se creó en la BD'});
                             }

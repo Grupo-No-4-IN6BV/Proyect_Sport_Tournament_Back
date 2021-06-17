@@ -2,9 +2,11 @@
 
 var League = require('../models/league.model');
 var Team = require('../models/team.model');
+var User = require('../models/user.model')
 
 function setTeam(req, res){
     var leagueId = req.params.id;
+    var userId = req.params.idU;
     var params = req.body;
     var team = new Team();
 
@@ -14,15 +16,32 @@ function setTeam(req, res){
         }else if(leagueFind){
             team.name = params.name;
             team.image = params.image;
+            team.count = params.count;
             team.save((err, teamSaved)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general 2'});
                 }else if(teamSaved){
+                    console.log(leagueFind)
                     League.findByIdAndUpdate(leagueId, {$push:{teams: teamSaved._id}}, {new: true}, (err, pushTeam)=>{
                         if(err){
                             return res.status(500).send({message: 'Error general al hacer push'});
                         }else if(pushTeam){
-                            return res.send({message: 'Se pusheo correctamente el equipo', pushTeam});
+                            User.findById(userId, (err, userFind)=>{
+                                if(err){
+                                    console.log('error')
+                                }else if(userFind){
+                                    return res.send({message: 'Se pusheo correctamente el equipo', pushTeam, userFind});
+                                }
+                            }).populate([
+                                {
+                                  path: "leagues",
+                                  model: "league",
+                                  populate:{
+                                    path: 'teams',
+                                    model: 'team'
+                                  }
+                                },
+                              ])
                         }else{
                             return res.status(404).send({message: 'No se encontro'});
                         }
@@ -36,6 +55,8 @@ function setTeam(req, res){
         }
     })
 }
+
+
 
 function updateTeam(req, res){
     let leagueId = req.params.idL;

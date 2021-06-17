@@ -61,6 +61,7 @@ function login(req, res){
                                 token: jwt.createToken(userFind),
 				                user: userFind
                             })
+                            console.log(userFind)
                         }else{
                             return res.send({ message: "Usuario logeado", userFind})
                         }
@@ -71,7 +72,16 @@ function login(req, res){
             }else{
                 return res.send({message: "Usuario no existente"})
             }
-        }).populate('leagues')
+        }).populate([
+            {
+              path: "leagues",
+              model: "league",
+              populate:{
+                path: 'teams',
+                model: 'team'
+              }
+            },
+          ])
     }else{
         return res.status(404).send({message: "Ingrese Username y contraseña"})
     }
@@ -123,6 +133,7 @@ function getUsers(req, res){
         if(err){
             return res.status(500).send({message: "Error al buscar los usuarios"})
         }else if(users){
+            console.log(users)
             return res.send({message: "Usuarios encontrados", users})
         }else{
             return res.status(204).send({message: "No se encontraron usuarios"})
@@ -154,7 +165,16 @@ function updateUser(req, res){
                                 }else{
                                     return res.send({message: 'No se pudo actualizar al usuario'});
                                 }
-                            }).populate('leagues')
+                            }).populate([
+                                {
+                                  path: "leagues",
+                                  model: "league",
+                                  populate:{
+                                    path: 'teams',
+                                    model: 'team'
+                                  }
+                                },
+                              ])
                         }else{
                             return res.send({message: 'Nombre de usuario ya en uso'});
                         }
@@ -167,7 +187,16 @@ function updateUser(req, res){
                             }else{
                                 return res.send({message: 'No se pudo actualizar al usuario'});
                             }
-                        })
+                        }).populate([
+                            {
+                              path: "leagues",
+                              model: "league",
+                              populate:{
+                                path: 'teams',
+                                model: 'team'
+                              }
+                            },
+                          ])
                     }
                 })
             }else{
@@ -179,7 +208,16 @@ function updateUser(req, res){
                     }else{
                         return res.send({message: 'No se pudo actualizar al usuario'});
                     }
-                })
+                }).populate([
+                    {
+                      path: "leagues",
+                      model: "league",
+                      populate:{
+                        path: 'teams',
+                        model: 'team'
+                      }
+                    },
+                  ])
             }
         }
     }
