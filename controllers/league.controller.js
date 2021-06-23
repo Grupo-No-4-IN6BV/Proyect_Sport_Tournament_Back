@@ -213,7 +213,16 @@ function updateLeague(req, res){
                                 }else if(userLeagueAct){
                                     return res.send({message: 'Contacto actualizado', userLeagueAct});
                                 }
-                            }).populate('leagues')
+                            }).populate([
+                                {
+                                  path: "leagues",
+                                  model: "league",
+                                  populate:{
+                                    path: 'teams',
+                                    model: 'team'
+                                  }
+                                },
+                              ])
                             
                         }else{
                             return res.status(401).send({message: 'No se pudo actualizar el contacto'});

@@ -113,7 +113,7 @@ function updateMach(req, res){
                         match.goalsf = matchfind.goalsf + params.goalsf;
                         match.matchCount = matchfind.matchCount + params.matchCount;
                         match.idMatch = params.idMatch
-                        match.points = matchfind.points + 1;
+                        match.value = matchfind.value + 1;
                         Match.findByIdAndUpdate(matchfind._id, match, {new: true}, (err, updateTeam)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general 5'});
@@ -130,7 +130,7 @@ function updateMach(req, res){
                                                 matchL.goals = matchLoserfind.goals + params.goalsf;
                                                 matchL.goalsf = matchLoserfind.goalsf + params.goals;
                                                 matchL.matchCount = matchLoserfind.matchCount + params.matchCount;
-                                                matchL.points = matchLoserfind.points + 1;
+                                                matchL.value = matchLoserfind.value + 1;
                                                 matchL.idMatch = params.idMatch;
                                                 console.log(matchL)
                                                 Match.findByIdAndUpdate(matchLoserfind._id, matchL, {new: true}, (err, updateTeamL)=>{
@@ -147,10 +147,10 @@ function updateMach(req, res){
                                                 matchL.goalsf = params.goals;
                                                 matchL.matchCount = params.matchCount;
                                                 matchL.idTeam = teamLoserFind._id;
-                                                matchL.nameTeam = teamLoserFind.name;
+                                                matchL.name = teamLoserFind.name;
                                                 matchL.idLeague = leagueId;
                                                 matchL.idMatch = params.idMatch;
-                                                matchL.points = 1;
+                                                matchL.value = 1;
                                                 matchL.save((err, matchLSaved)=>{
                                                     if(err){
                                                         return res.status(500).send({message: 'Error general 3'});
@@ -181,10 +181,10 @@ function updateMach(req, res){
                         match.goalsf = params.goalsf;
                         match.matchCount = params.matchCount;
                         match.idTeam = teamId;
-                        match.nameTeam = teamFind.name;
+                        match.name = teamFind.name;
                         match.idMatch = params.idMatch;
                         match.idLeague = leagueId;
-                        match.points = 1;
+                        match.value = 1;
                         match.save((err, matchSaved)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general 3'});
@@ -206,7 +206,7 @@ function updateMach(req, res){
                                                         matchL.goals = matchLoserfind + params.goalsf;
                                                         matchL.goalsf = matchLoserfind + params.goals
                                                         matchL.matchCount = matchLoserfind.matchCount + params.matchCount;
-                                                        matchL.points = matchLoserfind.points+1;
+                                                        matchL.value = matchLoserfind.value+1;
                                                         matchL.idMatch = params.idMatch;
                                                         Match.findByIdAndUpdate(matchLoserfind._id, matchL, {new: true}, (err, updateTeamL)=>{
                                                             if(err){
@@ -222,10 +222,10 @@ function updateMach(req, res){
                                                         matchL.goalsf = params.goals;
                                                         matchL.matchCount = params.matchCount;
                                                         matchL.idTeam = params.idLoser
-                                                        matchL.nameTeam = teamLoserFind.name;
+                                                        matchL.name = teamLoserFind.name;
                                                         matchL.idLeague = leagueId;
                                                         matchL.idMatch = params.idMatch;
-                                                        matchL.points = 1;
+                                                        matchL.value = 1;
                                                         matchL.save((err, matchLSaved)=>{
                                                             if(err){
                                                                 return res.status(500).send({message: 'Error general 3'});
@@ -278,7 +278,7 @@ function updateMach(req, res){
                     match.goalsf = matchfind.goalsf + params.goalsf;
                     match.matchCount = matchfind.matchCount + params.matchCount;
                     match.idMatch = params.idMatch
-                    match.points = matchfind.points + 3;
+                    match.value = matchfind.value + 3;
                     Match.findByIdAndUpdate(matchfind._id, match, {new: true}, (err, updateTeam)=>{
                         if(err){
                             return res.status(500).send({message: 'Error general 5'});
@@ -295,7 +295,7 @@ function updateMach(req, res){
                                             matchL.goals = matchLoserfind.goals + params.goalsf;
                                             matchL.goalsf = matchLoserfind.goalsf + params.goals;
                                             matchL.matchCount = matchLoserfind.matchCount + params.matchCount;
-                                            matchL.points = matchLoserfind.points;
+                                            matchL.value = matchLoserfind.value;
                                             matchL.idMatch = params.idMatch;
                                             console.log(matchL)
                                             Match.findByIdAndUpdate(matchLoserfind._id, matchL, {new: true}, (err, updateTeamL)=>{
@@ -312,9 +312,10 @@ function updateMach(req, res){
                                             matchL.goalsf = params.goals;
                                             matchL.matchCount = params.matchCount;
                                             matchL.idTeam = teamLoserFind._id;
+                                            matchL.name = teamLoserFind.name;
                                             matchL.idLeague = leagueId;
                                             matchL.idMatch = params.idMatch;
-                                            matchL.points = 0;
+                                            matchL.value = 0;
                                             matchL.save((err, matchLSaved)=>{
                                                 if(err){
                                                     return res.status(500).send({message: 'Error general 3'});
@@ -345,10 +346,10 @@ function updateMach(req, res){
                     match.goalsf = params.goalsf;
                     match.matchCount = params.matchCount;
                     match.idTeam = teamId;
-                    match.nameTeam = teamFind.name;
+                    match.name = teamFind.name;
                     match.idLeague = leagueId;
                     match.idMatch = params.idMatch;
-                    match.points = 3;
+                    match.value = 3;
                     match.save((err, matchSaved)=>{
                         if(err){
                             return res.status(500).send({message: 'Error general 3'});
@@ -370,7 +371,7 @@ function updateMach(req, res){
                                                     matchL.goals = matchLoserfind + params.goalsf;
                                                     matchL.goalsf = matchLoserfind + params.goals
                                                     matchL.matchCount = matchLoserfind.matchCount + params.matchCount;
-                                                    matchL.points = matchLoserfind.points;
+                                                    matchL.value = matchLoserfind.value;
                                                     matchL.idMatch = params.idMatch;
                                                     Match.findByIdAndUpdate(matchLoserfind._id, matchL, {new: true}, (err, updateTeamL)=>{
                                                         if(err){
@@ -386,10 +387,10 @@ function updateMach(req, res){
                                                     matchL.goalsf = params.goals;
                                                     matchL.matchCount = params.matchCount;
                                                     matchL.idTeam = params.idLoser
-                                                    matchL.nameTeam = teamLoserFind.name;
+                                                    matchL.name = teamLoserFind.name;
                                                     matchL.idLeague = leagueId;
                                                     matchL.idMatch = params.idMatch;
-                                                    matchL.points = 0;
+                                                    matchL.value = 0;
                                                     matchL.save((err, matchLSaved)=>{
                                                         if(err){
                                                             return res.status(500).send({message: 'Error general 3'});

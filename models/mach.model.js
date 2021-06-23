@@ -9,8 +9,8 @@ var MatchSchema = Schema({
     goalsf: Number,
     matchCount: Number,
     idTeam: String,
-    points: Number,
-    nameTeam: String,
+    value: Number,
+    name: String,
     idLeague: String
 })
 
