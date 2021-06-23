@@ -9,6 +9,8 @@ api.put('/:idU/:id/setTeam', teamController.setTeam);
 api.put('/:idL/updateTeam/:idT', teamController.updateTeam);
 api.put('/:idL/removeTeam/:idT', teamController.removeTeam);
 api.get('/getTeams', teamController.getTeams);
+api.put('/:idL/updateMach/:idT', teamController.updateMach);
+api.put('/getMatches/:idL', teamController.getMatches);
 
 
 module.exports = api;

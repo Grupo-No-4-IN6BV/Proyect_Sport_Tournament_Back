@@ -78,7 +78,11 @@ function login(req, res){
               model: "league",
               populate:{
                 path: 'teams',
-                model: 'team'
+                model: 'team',
+                populate:{
+                    path: 'leagueMatch',
+                    model: 'match'
+                }
               }
             },
           ])

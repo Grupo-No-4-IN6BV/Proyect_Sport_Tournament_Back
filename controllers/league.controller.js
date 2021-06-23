@@ -202,6 +202,7 @@ function updateLeague(req, res){
                 if(err){
                     return res.status(500).send({message: 'Error general'});
                 }else if(userLeague){
+                    
                     League.findByIdAndUpdate(leagueId, update, {new: true}, (err, updateLeague)=>{
                         if(err){
                             return res.status(500).send({message: 'Error general al actualizar'});
