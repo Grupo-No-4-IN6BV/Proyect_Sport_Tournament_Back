@@ -74,7 +74,7 @@ function updateTeam(req, res){
                     if(err){
                         return res.status(500).send({message: 'Error general 3'});
                     }else if(updateTeam){
-                        return res.send({message: 'Equipo actualizao', updateTeam});
+                        return res.send({message: 'Equipo actualizao', updateTeam, leagueFind});
                     }else{
                         return res.status(404).send({message: 'No se pudo actualizar el equipo'});
                     }
@@ -443,7 +443,7 @@ function removeTeam(req,res){
                 if(err){
                     return res.status(500).send({message: 'Error general 2', err})
                 }else if(teamRemove){
-                    return res.send({message: 'Se elimino el equipo: ', teamRemove});
+                    return res.send({message: 'Se elimino el equipo: ', teamPull});
                 }else{
                     return res.status(404).send({message: 'No se pudo eliminar'})
                 }
