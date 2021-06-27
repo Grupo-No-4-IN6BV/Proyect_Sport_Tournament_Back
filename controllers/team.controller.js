@@ -520,7 +520,17 @@ function getMatches(req, res){
             return res.status(500).send({message: "Error al buscar los usuarios"})
         }else if(matches){
             console.log(matches)
-            return res.send({message: "Usuarios encontrados", matches})
+            Team.find({league: leagueId}).countDocuments((err, countTeams)=>{
+                if(err){
+                    return res.status(500).send({message: "Error al buscar los usuarios"})
+                }else if(countTeams){
+                    console.log(countTeams)
+                    return res.send({message: "Usuarios encontrados", matches, countTeams})
+                }else{
+                    return res.status(204).send({message: "No se encontraron usuarios"})
+                }
+            })
+            
         }else{
             return res.status(204).send({message: "No se encontraron usuarios"})
         }
