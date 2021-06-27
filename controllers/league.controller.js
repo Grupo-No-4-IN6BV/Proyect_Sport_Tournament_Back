@@ -4,6 +4,26 @@ var User = require('../models/user.model');
 var League = require('../models/league.model');
 var Team = require('../models/team.model');
 
+
+
+
+function getleague(req, res){
+    console.log('llegue aqui')
+    let leagueId = req.params.idL; 
+
+    League.findOne({_id:leagueId}, (err, leagueFind)=>{
+        if(err){
+            return res.status(500).send({message: "Error al buscar los usuarios"})
+        }else if(leagueFind){console.log(leagueFind)
+            return res.send({message: "Usuarios encontrados", leagueFind})
+            
+        }else{
+            return res.status(204).send({message: "No se encontraron usuarios"})
+        }
+    }).populate('teams')
+}
+
+
 function createDefault(req, res){
     let league = new League();
     
@@ -106,23 +126,19 @@ function setLeague(req, res){
                                     if(err){
                                         return res.status(500).send({message: 'Error general 1'});
                                     }else if(leagueFind){
-                                        team.name = 'default';
-                                        team.image = '';
-                                        team.count = 0;
-                                        team.save((err, teamSaved)=>{
+                                        Team.findOne({name:'default'}, (err, teamdefault)=>{
                                             if(err){
-                                                return res.status(500).send({message: 'Error general 2'});
-                                            }else if(teamSaved){
-                                                console.log(leagueFind)
-                                                League.findByIdAndUpdate(leagueSaved._id, {$push:{teams: teamSaved._id}}, {new: true}, (err, pushTeam)=>{
+                                                return res.status(500).send({message: 'Error general 1'});
+                                            }else if(teamdefault){
+                                                League.findByIdAndUpdate(leagueSaved._id, {$push:{teams: teamdefault._id}}, {new: true}, (err, pushTeam)=>{
                                                     if(err){
                                                         return res.status(500).send({message: 'Error general al hacer push'});
                                                     }else if(pushTeam){
                                                         User.findById(userId, (err, userFind2)=>{
                                                             if(err){
-                                                                console.log('error')
+                                                             console.log('error')
                                                             }else if(userFind2){
-                                                                return res.send({message: 'Se pusheo correctamente el equipo', pushTeam, userFind2, pushLeague});
+                                                                return res.send({message: 'Se pusheo correctamente el equipo ', pushTeam, userFind2, pushLeague});
                                                             }
                                                         }).populate([
                                                             {
@@ -139,7 +155,7 @@ function setLeague(req, res){
                                                     }
                                                 })
                                             }else{
-                                                return res.status(404).send({message: 'No se pudo guardar'});
+
                                             }
                                         })
                                     }else {
@@ -239,11 +255,18 @@ function updateLeague(req, res){
 }
 
 
+
+
+
+
+
+
 module.exports = {
     createDefault,
     saveLeague,
     updateLeague,
     removeLeague,
     searchLeague,
-    setLeague
+    setLeague,
+    getleague
 }

@@ -61,7 +61,6 @@ function login(req, res){
                                 token: jwt.createToken(userFind),
 				                user: userFind
                             })
-                            console.log(userFind)
                         }else{
                             return res.send({ message: "Usuario logeado", userFind})
                         }

@@ -6,6 +6,29 @@ var User = require('../models/user.model')
 var Match = require('../models/mach.model');
 const machModel = require('../models/mach.model');
 
+function teamdefault(req, res){
+    let team = new Team();
+    team.name = 'default'
+
+    Team.findOne({name: team.name}, (err, teamfind)=>{
+        if(err){
+            return res.status(500).send({message: 'Error general 1'});
+        }else if(teamfind){
+            return console.log('team default ya se creo');
+        }else{
+            team.save((err, teamdefaultSaved)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general 1'});
+                }else if(teamdefaultSaved){
+                    return console.log('team default creado satisfactoriamente');
+                }else{
+                    return res.status(204).send({message: 'no se creo el team default'});
+                }
+            })
+        }
+    })
+}
+
 function setTeam(req, res){
     var leagueId = req.params.id;
     var userId = req.params.idU;
@@ -19,6 +42,7 @@ function setTeam(req, res){
             team.name = params.name;
             team.image = params.image;
             team.count = params.count;
+            team.league = leagueId; 
             team.save((err, teamSaved)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general 2'});
@@ -61,9 +85,11 @@ function setTeam(req, res){
 
 
 function updateTeam(req, res){
+    let userId = req.params.idU;
     let leagueId = req.params.idL;
     let teamId = req.params.idT;   
     let params = req.body;
+
 
     if(params.name || params.image){
         League.findOne({_id: leagueId, teams: teamId}, (err, leagueFind)=>{
@@ -74,7 +100,15 @@ function updateTeam(req, res){
                     if(err){
                         return res.status(500).send({message: 'Error general 3'});
                     }else if(updateTeam){
-                        return res.send({message: 'Equipo actualizao', updateTeam, leagueFind});
+                        Match.updateMany({idTeam: teamId}, params, (err, updateMatch)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general 3'});
+                            }else if(updateMatch){
+                                return res.send({message: 'se actualizo', updateMatch});
+                            }else{
+                                return res.send({message: 'no se pudo actualizar'});
+                            }
+                        })
                     }else{
                         return res.status(404).send({message: 'No se pudo actualizar el equipo'});
                     }
@@ -443,7 +477,16 @@ function removeTeam(req,res){
                 if(err){
                     return res.status(500).send({message: 'Error general 2', err})
                 }else if(teamRemove){
-                    return res.send({message: 'Se elimino el equipo: ', teamPull});
+                    Match.deleteMany({idTeam: teamId}, (err, matchdelete)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general 1'})
+                        }else if(matchdelete){
+                            return res.send({message: 'Se elimino el equipo: ', matchdelete});
+                        }else{
+                            return res.send({message: 'Error general 2'})
+                        }
+                    })
+                    
                 }else{
                     return res.status(404).send({message: 'No se pudo eliminar'})
                 }
@@ -466,6 +509,8 @@ function getTeams(req, res){
     })
 }
 
+
+
 function getMatches(req, res){
     let leagueId = req.params.idL; 
     var params = req.body;
@@ -483,6 +528,7 @@ function getMatches(req, res){
 }
 
 module.exports = {
+    teamdefault,
     setTeam,
     updateTeam,
     removeTeam,
