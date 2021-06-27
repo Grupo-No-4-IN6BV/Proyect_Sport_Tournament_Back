@@ -29,7 +29,6 @@ function createTorneo(req, res){
 
 function removeTorneo(req, res){
     let torneoId = req.params.id;
-
     Torneo.findByIdAndRemove(torneoId, (err, torneoRemoved)=>{
         if(err){
             return res.status(500).send({message: "Error con eliminar el torneo"})
