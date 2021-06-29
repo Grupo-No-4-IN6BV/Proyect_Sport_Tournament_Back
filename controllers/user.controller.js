@@ -227,10 +227,48 @@ function updateUser(req, res){
     
 }
 
-function saveUser(req, res){
+function saveUserByAdmin(req, res){
+    let user = new User();
+    let params = req.body;
+
+    if(params.name && params.username && params.password && params.email && params.role){
+        User.findOne({username: params.username}, (err, userFind)=>{
+            if(err){    
+                return res.status(500).send({message: "Error al buscar un usuario"});
+            }else if(userFind){
+                return res.send({message: "Ya esta en uso este Username"});
+            }else{
+                bcrypt.hash(params.password, null, null, (err, passwordHash)=>{
+                    if(err){
+                        return res.status(500).send({message: "Error general"});
+                    }else if(passwordHash){
+                        user.password = passwordHash;
+                        user.name = params.name;
+                        user.username = params.username;
+                        user.email = params.email;
+                        user.role = params.role;
+                        user.image = params.image;
+                        user.save((err, userSaved)=>{
+                            if(err){
+                                return res.status(500).send({message: "Error general 2"});
+                            }else if(userSaved){
+                                return res.send({message: "Usuario guardado correctamente: ", userSaved});
+                            }else{
+                                return res.status(500).send({message: "No se pudo guardar el usuario"});
+                            }
+                        })
+                    }else{ 
+                        return res.status(401).send({message: "Error con la encriptación"});
+                    }
+                })
+            }
+        })
+    }else{
+        return res.status(401).send({message: "Ingrese los datos minimos, porfavor"})
+    }
 }
 
-function removeUser(req, res){
+/*function removeUser(req, res){
     let userId = req.params.id;
     let params = req.body;
 
@@ -267,13 +305,13 @@ function removeUser(req, res){
             })
         }
     }
-}
+}*/
 
 module.exports = {
     initAdmin,
     register,
     login,
+    saveUserByAdmin,
     getUsers,
-    updateUser,
-    removeUser
+    updateUser
 }
