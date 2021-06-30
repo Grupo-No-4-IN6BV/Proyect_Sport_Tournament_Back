@@ -307,6 +307,65 @@ function removeUser(req, res){
     }
 }
 
+function updateUserByAdmin(req, res){
+
+    let userId = req.params.id;
+    let update = req.body;
+
+    if(userId != req.user.sub){
+        return res.status(404).send({message: 'No tienes permiso para realizar esta operación'})
+    }else{
+        if(update.password){
+            return res.status(403).send({message: 'No tienes permisos para actualizar el contraseña'})
+        }else{
+            if(update.username){
+                User.findOne({username: update.username}, (err, usernameFind)=>{
+                    if(err){
+                        return res.status(500).send({message: 'Error general al buscar'})
+                    }else if(usernameFind){
+                        return res.send({message: 'Nombre de usuario ya en uso'})
+                    }else{
+                        User.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdated)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general al actualizar'})
+                            }else if(userUpdated){
+                                return res.send({message: 'Usuario actualizado', userUpdated})
+                            }else{
+                                return res.status(401).send({message: 'No se actualizó el usuario'})  
+                            }
+                        })
+                    }
+                })
+            }else{
+                User.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdated)=>{
+                    if(err){
+                        return res.status(500).send({message: 'Error general al actualizar'})
+                    }else if(userUpdated){
+                        return res.send({message: 'Usuario actualizado', userUpdated})
+                    }else{
+                        return res.status(401).send({message: 'No se actualizó el usuario'})  
+                    }
+                })
+            }
+        }
+    }
+
+}
+
+function removeUserByAdmin(req, res){
+    let userId = req.params.id;
+
+    User.findByIdAndRemove(userId, (err, userRemoved)=>{
+        if(err){
+            res.status(500).send({message: 'Error general al eliminar usuario'});
+        }else if(userRemoved){
+            res.status(200).send({message: 'Usuario eliminado', userRemoved});
+        }else{
+            res.status(200).send({message: 'No existe registro del usuario deseado a eliminar'});  
+        }       
+    })
+}
+
 module.exports = {
     initAdmin,
     register,
@@ -314,5 +373,7 @@ module.exports = {
     saveUserByAdmin,
     getUsers,
     updateUser,
-    removeUser
+    removeUser,
+    updateUserByAdmin,
+    removeUserByAdmin
 }
