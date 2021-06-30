@@ -268,7 +268,7 @@ function saveUserByAdmin(req, res){
     }
 }
 
-/*function removeUser(req, res){
+function removeUser(req, res){
     let userId = req.params.id;
     let params = req.body;
 
@@ -305,7 +305,7 @@ function saveUserByAdmin(req, res){
             })
         }
     }
-}*/
+}
 
 module.exports = {
     initAdmin,
@@ -313,5 +313,6 @@ module.exports = {
     login,
     saveUserByAdmin,
     getUsers,
-    updateUser
+    updateUser,
+    removeUser
 }
