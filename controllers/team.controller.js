@@ -22,7 +22,7 @@ function teamdefault(req, res){
                 }else if(teamdefaultSaved){
                     return console.log('Equipo «default» creado exitosamente');
                 }else{
-                    return res.status(204).send({message: 'No se creo el equipo'});
+                    return res.status(204).send({message: 'No se pudo crear el equipo'});
                 }
             })
         }
@@ -37,7 +37,7 @@ function setTeam(req, res){
 
     League.findById(leagueId, (err, leagueFind)=>{
         if(err){
-            return res.status(500).send({message: 'Error general al '});
+            return res.status(500).send({message: 'Error general al implementar el equipo'});
         }else if(leagueFind){
             team.name = params.name;
             team.image = params.image;
@@ -45,18 +45,18 @@ function setTeam(req, res){
             team.league = leagueId; 
             team.save((err, teamSaved)=>{
                 if(err){
-                    return res.status(500).send({message: 'Error general 2'});
+                    return res.status(500).send({message: 'Error general al implementar el equipo'});
                 }else if(teamSaved){
                     console.log(leagueFind)
                     League.findByIdAndUpdate(leagueId, {$push:{teams: teamSaved._id}}, {new: true}, (err, pushTeam)=>{
                         if(err){
-                            return res.status(500).send({message: 'Error general al hacer push'});
+                            return res.status(500).send({message: 'Error general al implementar el equipo'});
                         }else if(pushTeam){
                             User.findById(userId, (err, userFind)=>{
                                 if(err){
                                     console.log('error')
                                 }else if(userFind){
-                                    return res.send({message: 'Se pusheo correctamente el equipo', pushTeam, userFind});
+                                    return res.send({message: 'Se implemento el equipo correctamente', pushTeam, userFind});
                                 }
                             }).populate([
                                 {
@@ -69,15 +69,15 @@ function setTeam(req, res){
                                 },
                               ])
                         }else{
-                            return res.status(404).send({message: 'No se encontro'});
+                            return res.status(404).send({message: 'No se encontro el equipo para implementar'});
                         }
                     }).populate('teams')
                 }else{
-                    return res.status(404).send({message: 'No se pudo guardar'});
+                    return res.status(404).send({message: 'No se pudieron realizar los cambios de implementación'});
                 }
             })
         }else {
-            return res.status(404).send({message: 'No existe esta liga'});
+            return res.status(404).send({message: 'La liga no existe'});
         }
     })
 }
@@ -94,19 +94,19 @@ function updateTeam(req, res){
     if(params.name || params.image){
         League.findOne({_id: leagueId, teams: teamId}, (err, leagueFind)=>{
             if(err){
-                return res.status(500).send({message: 'Error general 2'});
+                return res.status(500).send({message: 'Error general al actualizar el equipo'});
             }else if(leagueFind){
                 Team.findByIdAndUpdate(teamId, params, {new: true}, (err, updateTeam)=>{
                     if(err){
-                        return res.status(500).send({message: 'Error general 3'});
+                        return res.status(500).send({message: 'Error general al actualizar el equipo'});
                     }else if(updateTeam){
                         Match.updateMany({idTeam: teamId}, params, (err, updateMatch)=>{
                             if(err){
-                                return res.status(500).send({message: 'Error general 3'});
+                                return res.status(500).send({message: 'Error general al actualizar el equipo'});
                             }else if(updateMatch){
-                                return res.send({message: 'se actualizo', updateMatch});
+                                return res.send({message: 'Se actualizó correctamente el equipo', updateMatch});
                             }else{
-                                return res.send({message: 'no se pudo actualizar'});
+                                return res.send({message: 'No se pudo actualizar el equipo'});
                             }
                         })
                     }else{
@@ -114,17 +114,17 @@ function updateTeam(req, res){
                     }
                 })
             }else{
-                return res.status(404).send({message: 'No existe esta liga'});
+                return res.status(404).send({message: 'Esta liga no existe, por lo tanto no se puede actualizar'});
             }
         })
     }else{
-        return res.status(404).send({message: 'Ingresa los datos mínimos'});    
+        return res.status(404).send({message: 'Ingresa los datos mínimos para poder actualizar'});    
     }
 }
 
 
 
-
+/*AYUDAaAaAaAaA*/
 function updateMach(req, res){
     let teamId = req.params.idT; 
     let leagueId = req.params.idL;   
@@ -136,11 +136,11 @@ function updateMach(req, res){
     if(params.goals == params.goalsf){
         Team.findById(teamId, (err, teamFind)=>{
             if(err){
-                return res.status(500).send({message: 'Error general1'});
+                return res.status(500).send({message: 'Error general al actualizar el emparejamiento'});
             }else if(teamFind){
                Match.findOne({idMatch: params.idMatch, idTeam: teamId}, (err, matchfind)=>{
                    if(err){
-                    return res.status(500).send({message: 'Error general2'});
+                    return res.status(500).send({message: 'Error general al actualizar el emparejamiento'});
                    }else if(matchfind){
                         match._id = matchfind._id;
                         match.goals =  matchfind.goals + params.goals;
@@ -150,15 +150,15 @@ function updateMach(req, res){
                         match.value = matchfind.value + 1;
                         Match.findByIdAndUpdate(matchfind._id, match, {new: true}, (err, updateTeam)=>{
                             if(err){
-                                return res.status(500).send({message: 'Error general 5'});
+                                return res.status(500).send({message: 'Error general al actualizar el emparejamiento'});
                             }else if(updateTeam){
                                 Team.findById(params.idLoser, (err, teamLoserFind)=>{
                                     if(err){
-                                        return res.status(500).send({message: 'Error general 5'});
+                                        return res.status(500).send({message: 'Error general al actualizar el emparejamiento'});
                                     }else if(teamLoserFind){
                                         Match.findOne({idMatch: params.idMatch, idTeam: teamLoserFind._id}, (err, matchLoserfind)=>{
                                             if(err){
-                                                return res.status(500).send({message: 'Error general 5'});
+                                                return res.status(500).send({message: 'Error al actualizar el emparejamiento'});
                                             }else if(matchLoserfind){
                                                 matchL._id = matchLoserfind._id;
                                                 matchL.goals = matchLoserfind.goals + params.goalsf;
@@ -171,7 +171,7 @@ function updateMach(req, res){
                                                     if(err){
     
                                                     }else if(updateTeamL){
-                                                        return res.send({message: 'se agrego exitosamente el partido',updateTeamL});
+                                                        return res.send({message: 'El emparejamiento fue añadido exitosamente',updateTeamL});
                                                     }else{
     
                                                     }
@@ -187,19 +187,19 @@ function updateMach(req, res){
                                                 matchL.value = 1;
                                                 matchL.save((err, matchLSaved)=>{
                                                     if(err){
-                                                        return res.status(500).send({message: 'Error general 3'});
+                                                        return res.status(500).send({message: 'Error al actualizar el emparejamiento'});
                                                     }else if(matchLSaved){
                                                         Team.findByIdAndUpdate(params.idLoser, {$push:{leagueMatch: matchLSaved._id}}, {new: true}, (err, pushLMatch)=>{
                                                             if(err){
-                                                                return res.status(500).send({message: 'Error general 3'});
+                                                                return res.status(500).send({message: 'Error al actualizar el emparejamiento'});
                                                             }else if(pushLMatch){
-                                                                return res.send({message: 'se agrego exitosamente el partido',pushLMatch});
+                                                                return res.send({message: 'El emparejamiento fue añadido exitosamente',pushLMatch});
                                                             }else{
-    
+                                                                return res.status(500).send({message: 'No se pudo guardar el emparejamiento'});   
                                                             }
                                                         })
-                                                    }else{
-    
+                                                    }else{  
+                                                        return res.status(500).send({message: 'Error al guardar el emparejamiento'});           
                                                     }
                                                 })
                                             }
@@ -207,7 +207,7 @@ function updateMach(req, res){
                                     }else{}
                                 })
                             }else{
-                                return res.status(404).send({message: 'No se pudo actualizar el equipo'});
+                                return res.status(404).send({message: 'No se puedo actualizar el emparejamiento del equipo'});
                             }
                             })
                     }else{
