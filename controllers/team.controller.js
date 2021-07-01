@@ -12,17 +12,17 @@ function teamdefault(req, res){
 
     Team.findOne({name: team.name}, (err, teamfind)=>{
         if(err){
-            return res.status(500).send({message: 'Error general 1'});
+            return res.status(500).send({message: 'Error general al crear el equipo «default»'});
         }else if(teamfind){
-            return console.log('team default ya se creo');
+            return console.log('Equipo «default» creado exitosamente');
         }else{
             team.save((err, teamdefaultSaved)=>{
                 if(err){
-                    return res.status(500).send({message: 'Error general 1'});
+                    return res.status(500).send({message: 'Error general durante la creación del equipo'});
                 }else if(teamdefaultSaved){
-                    return console.log('team default creado satisfactoriamente');
+                    return console.log('Equipo «default» creado exitosamente');
                 }else{
-                    return res.status(204).send({message: 'no se creo el team default'});
+                    return res.status(204).send({message: 'No se creo el equipo'});
                 }
             })
         }
@@ -37,7 +37,7 @@ function setTeam(req, res){
 
     League.findById(leagueId, (err, leagueFind)=>{
         if(err){
-            return res.status(500).send({message: 'Error general 1'});
+            return res.status(500).send({message: 'Error general al '});
         }else if(leagueFind){
             team.name = params.name;
             team.image = params.image;
@@ -537,6 +537,18 @@ function getMatches(req, res){
     })
 }
 
+function getMatchesAdmin(req, res){
+    Match.find({}).exec((err, matches)=>{
+        if(err){
+            return res.status(204).send({message: "Error al buscar Matches"})
+        }else if(matches){
+            return res.send({message: "Matches encontrado", matches})
+        }else{
+            return res.status(204).send({message: "No se encontraron"})
+        }
+    })
+}
+
 module.exports = {
     teamdefault,
     setTeam,
@@ -544,6 +556,7 @@ module.exports = {
     removeTeam,
     getTeams,
     updateMach,
-    getMatches
+    getMatches,
+    getMatchesAdmin
     
 }

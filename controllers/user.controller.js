@@ -318,7 +318,15 @@ function removeUser(req, res){
                                 if(err){
                                     return res.status(500).send({message: 'Error general al verificar contraseña'})
                                 }else if(userFind){
-                                    return res.send({message: 'Usuario eliminado', userRemoved:userFind})
+                                    League.deleteMany({user: userId}, (err, deleteLeagues)=>{
+                                        if(err){
+                                            return res.status(500).send({message: 'Error general al actualizar'});
+                                        }else if(deleteLeagues){
+                                            return res.send({message: 'Usuario eliminado', userRemoved:userFind})
+                                        }else{
+                                            return res.status(500).send({message: 'no se encontro'});
+                                        }
+                                    })  
                                 }else{
                                     return res.send({message: 'Usuario no encontrado o ya eliminado'})
                                 }
@@ -355,7 +363,16 @@ function updateUserByAdmin(req, res){
                         if(err){
                             return res.status(500).send({message: 'Error general al actualizar'})
                         }else if(userUpdated){
-                            return res.send({message: 'Usuario actualizado', userUpdated})
+                            League.updateMany({user: userId},  {username: update.username} , (err, updateLeagues)=>{
+                                if(err){
+                                    return res.status(500).send({message: 'Error general al actualizar'});
+                                }else if(updateLeagues){
+                                    
+                                    return res.send({message: 'Usuario actualizado', userUpdated});
+                                }else{
+                                    return res.status(500).send({message: 'no se encontro'});
+                                }
+                            })
                         }else{
                             return res.status(401).send({message: 'No se actualizó el usuario'})  
                         }
@@ -367,7 +384,16 @@ function updateUserByAdmin(req, res){
                 if(err){
                     return res.status(500).send({message: 'Error general al actualizar'})
                 }else if(userUpdated){
-                    return res.send({message: 'Usuario actualizado', userUpdated})
+                    League.updateMany({user: userId},  {username: update.username} , (err, updateLeagues)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general al actualizar'});
+                        }else if(updateLeagues){
+                            
+                            return res.send({message: 'Usuario actualizado', userUpdated});
+                        }else{
+                            return res.status(500).send({message: 'no se encontro'});
+                        }
+                    })
                 }else{
                     return res.status(401).send({message: 'No se actualizó el usuario'})  
                 }
@@ -383,7 +409,15 @@ function removeUserByAdmin(req, res){
         if(err){
             res.status(500).send({message: 'Error general al eliminar usuario'});
         }else if(userRemoved){
-            res.status(200).send({message: 'Usuario eliminado', userRemoved});
+            League.deleteMany({user: userId}, (err, deleteLeagues)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general al actualizar'});
+                }else if(deleteLeagues){
+                    res.status(200).send({message: 'Usuario eliminado', userRemoved});
+                }else{
+                    return res.status(500).send({message: 'no se encontro'});
+                }
+            })  
         }else{
             res.status(200).send({message: 'No existe registro del usuario deseado a eliminar'});  
         }       
