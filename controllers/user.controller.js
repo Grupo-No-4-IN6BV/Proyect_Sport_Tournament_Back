@@ -1,6 +1,7 @@
 'user strict'
 
 var User = require('../models/user.model');
+var League = require('../models/league.model');
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('../services/jwt');
 
@@ -164,7 +165,16 @@ function updateUser(req, res){
                                 if(err){
                                     return res.status(500).send({message: 'Error general al actualizar'});
                                 }else if(userUpdated){
-                                    return res.send({message: 'Usuario actualizado', userUpdated});
+                                    League.updateMany({user: userId},  {username: update.username} , (err, updateLeagues)=>{
+                                        if(err){
+                                            return res.status(500).send({message: 'Error general al actualizar'});
+                                        }else if(updateLeagues){
+                                            console.log(updateLeagues)
+                                            return res.send({message: 'Usuario actualizado', userUpdated});
+                                        }else{
+                                            return res.status(500).send({message: 'no se encontro'});
+                                        }
+                                    })
                                 }else{
                                     return res.send({message: 'No se pudo actualizar al usuario'});
                                 }
@@ -186,7 +196,16 @@ function updateUser(req, res){
                             if(err){
                                 return res.status(500).send({message: 'Error general al actualizar'});
                             }else if(userUpdated){
-                                return res.send({message: 'Usuario actualizado', userUpdated});
+                                League.updateMany({user: userId},  {username: update.username} , (err, updateLeagues)=>{
+                                    if(err){
+                                        return res.status(500).send({message: 'Error general al actualizar'});
+                                    }else if(updateLeagues){
+                                        console.log(updateLeagues)
+                                        return res.send({message: 'Usuario actualizado', userUpdated});
+                                    }else{
+                                        return res.status(500).send({message: 'no se encontro'});
+                                    }
+                                })
                             }else{
                                 return res.send({message: 'No se pudo actualizar al usuario'});
                             }
@@ -207,7 +226,16 @@ function updateUser(req, res){
                     if(err){
                         return res.status(500).send({message: 'Error general al actualizar'});
                     }else if(userUpdated){
-                        return res.send({message: 'Usuario actualizado', userUpdated});
+                        League.updateMany({user: userId},  {username: update.username} , (err, updateLeagues)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general al actualizar'});
+                            }else if(updateLeagues){
+                                console.log(updateLeagues)
+                                return res.send({message: 'Usuario actualizado', userUpdated});
+                            }else{
+                                return res.status(500).send({message: 'no se encontro'});
+                            }
+                        })
                     }else{
                         return res.send({message: 'No se pudo actualizar al usuario'});
                     }
@@ -247,7 +275,7 @@ function saveUserByAdmin(req, res){
                         user.username = params.username;
                         user.email = params.email;
                         user.role = params.role;
-                        user.image = params.image;
+                        user.image = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/cf2836cb-5893-4a6c-b156-5a89d94fc721/dcb12oy-f393b61a-0754-475a-8f2e-db06550f392a.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2NmMjgzNmNiLTU4OTMtNGE2Yy1iMTU2LTVhODlkOTRmYzcyMVwvZGNiMTJveS1mMzkzYjYxYS0wNzU0LTQ3NWEtOGYyZS1kYjA2NTUwZjM5MmEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.yuSQQYbikFatv15ewUZmNDDxm7s3hBBYGJkUFUUF6rw'
                         user.save((err, userSaved)=>{
                             if(err){
                                 return res.status(500).send({message: "Error general 2"});

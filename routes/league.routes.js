@@ -11,5 +11,6 @@ api.put('/:idU/removeLeague/:idL', mdAuth.ensureAuth, leagueController.removeLea
 api.post('/search', mdAuth.ensureAuth, leagueController.searchLeague);
 api.put('/:id/setLeague', mdAuth.ensureAuth, leagueController.setLeague);
 api.put('/getLeague/:idL', mdAuth.ensureAuth, leagueController.getleague)
+api.get('/getleagues', leagueController.getLeagues)
 
 module.exports = api;

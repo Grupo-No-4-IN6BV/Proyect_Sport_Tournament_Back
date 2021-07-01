@@ -114,6 +114,8 @@ function setLeague(req, res){
                 league.name = params.name;
                 league.image = params.image;
                 league.count = '0';
+                league.user = userId;
+                league.username = userFind.username;
                 league.save((err, leagueSaved)=>{
                     if(err){
                         return res.status(500).send({message: 'Error general al guardar'});
@@ -181,9 +183,7 @@ function setLeague(req, res){
 function removeLeague(req, res){
     let userId = req.params.idU;
     let leagueId = req.params.idL;
-    if(userId != req.user.sub){
-        return res.status(500).send({message: 'No tienes permiso para realizar esta acción'})
-    }else{
+
         User.findOneAndUpdate({_id: userId, leagues: leagueId},
             {$pull: {leagues: leagueId}}, {new:true}, (err, leaguePull)=>{
                 if(err){
@@ -202,7 +202,7 @@ function removeLeague(req, res){
                     return res.status(404).send({message: 'No existe el usuario que contiene el contacto a eliminar'})
                 }
             }).populate('leagues')
-    }
+   
 }
 
 function updateLeague(req, res){
@@ -210,9 +210,6 @@ function updateLeague(req, res){
     let leagueId = req.params.idL;
     let update = req.body;
 
-    if(userId != req.user.sub){
-        return res.status(404).send({message: 'No tienes permiso para realizar esta acción'});
-    }else{
         if(update.name){
             User.findOne({_id: userId, leagues: leagueId}, (err, userLeague)=>{
                 if(err){
@@ -251,9 +248,21 @@ function updateLeague(req, res){
         }else{
             return res.status(404).send({message: 'Por favor ingresa los datos mínimos'});
         }       
-    }
+   
 }
 
+function getLeagues(req, res){
+    League.find({}).populate('user').exec((err, leagues) => {
+        if(err){
+            return res.status(500).send({message: "Error al buscar los usuarios"})
+        }else if(leagues){
+            console.log(leagues)
+            return res.send({message: "ligas encontradas", leagues})
+        }else{
+            return res.status(204).send({message: "No se encontraron usuarios"})
+        }
+    })
+}
 
 
 
@@ -268,5 +277,6 @@ module.exports = {
     removeLeague,
     searchLeague,
     setLeague,
-    getleague
+    getleague,
+    getLeagues
 }
